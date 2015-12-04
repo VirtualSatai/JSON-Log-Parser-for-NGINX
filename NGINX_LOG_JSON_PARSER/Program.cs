@@ -16,12 +16,13 @@ namespace NGINX_LOG_JSON_PARSER
         {
             ParseList("tv.log");
             ParseList("tv.log.1");
+            ParseList("tv.log.2");
             ParseList("tv.log.3");
 
             if (args.Length > 0)
                 cmdlineoptions(args);
             else
-                cmdlineoptions(new string[] { "who", "troels" });
+                cmdlineoptions(new string[] { "ma", "" });
 
             /*
             mostActiveUsers();
