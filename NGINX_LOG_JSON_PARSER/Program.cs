@@ -18,6 +18,15 @@ namespace NGINX_LOG_JSON_PARSER
             ParseList("tv.log.1");
             ParseList("tv.log.2");
             ParseList("tv.log.3");
+            ParseList("tv.log.4");
+            ParseList("tv.log.5");
+            ParseList("tv.log.6");
+            ParseList("tv.log.7");
+            ParseList("tv.log.8");
+            ParseList("tv.log.9");
+            ParseList("tv.log.10");
+            ParseList("tv.log.11");
+
 
             if (args.Length > 0)
                 cmdlineoptions(args);
@@ -39,11 +48,11 @@ namespace NGINX_LOG_JSON_PARSER
             {
                 case "who":
                     if (args[1] != null)
-                        whoHasWatched(args[1]);
+                        WhoHasWatched(args[1]);
                     break;
                 case "what":
                     if (args[1] != null)
-                        whatHasWhoWatched(args[1]);
+                        WhatHasWhoWatched(args[1]);
                     break;
                 case "ma":
                     mostActiveUsers();
@@ -56,7 +65,7 @@ namespace NGINX_LOG_JSON_PARSER
                     }
                     catch
                     {
-                        
+
                     }
                     mostRequestedFiles(i);
                     break;
@@ -66,7 +75,7 @@ namespace NGINX_LOG_JSON_PARSER
             }
         }
 
-        static void whatHasWhoWatched(string str)
+        static void WhatHasWhoWatched(string str)
         {
             Console.WriteLine("What has " + str + " watched ?");
             foreach (var el in list.Where(x => x.remote_user == str && x.body_bytes_sent > 1024 * 1024 * 100).GroupBy(x => x.request).OrderBy(x => ConvertToDatetime(x.First().time_local)))
@@ -79,10 +88,10 @@ namespace NGINX_LOG_JSON_PARSER
             }
         }
 
-        static void whoHasWatched(string str)
+        static void WhoHasWatched(string str)
         {
             Console.WriteLine("Who has watched " + str + " ?");
-            foreach (var el in list.Where(x => x.request.Contains(str)).GroupBy(x => x.remote_user))
+            foreach (var el in list.Where(x => x.request.ToLower().Contains(str.ToLower())).GroupBy(x => x.remote_user))
             {
                 foreach (var instance in el.GroupBy(x => ConvertToDatetime(x.time_local)).Where(x => x.Sum(y => y.body_bytes_sent) > 1024 * 1024 * 100))
                 {
@@ -111,7 +120,7 @@ namespace NGINX_LOG_JSON_PARSER
 
             foreach (var el in groupedList
                 .Where(x => x.Sum(y => y.body_bytes_sent) > 1024 * 1024 * 1024)
-                .OrderBy(x => x.Sum(y => y.body_bytes_sent)))
+                .OrderByDescending(x => x.Sum(y => y.body_bytes_sent)))
             {
                 var size = el.Sum(x => x.body_bytes_sent) / 1024 / 1024 / 1024;
 
@@ -139,6 +148,8 @@ namespace NGINX_LOG_JSON_PARSER
             if (list == null)
                 list = new List<JSON_ITEM>();
 
+            var oldCount = list.Count();
+
             string line;
             System.IO.StreamReader file = new System.IO.StreamReader(filename);
             while ((line = file.ReadLine()) != null)
@@ -150,7 +161,7 @@ namespace NGINX_LOG_JSON_PARSER
                 }
             }
 
-            Console.WriteLine("\nParsed " + list.Count);
+            Console.WriteLine("\nParsed {0}: {1} new enteties", filename, (list.Count - oldCount));
         }
     }
 }
