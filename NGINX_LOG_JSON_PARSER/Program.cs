@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -15,17 +15,6 @@ namespace NGINX_LOG_JSON_PARSER
         static void Main(string[] args)
         {
             ParseList("tv.log");
-            ParseList("tv.log.1");
-            ParseList("tv.log.2");
-            ParseList("tv.log.3");
-            ParseList("tv.log.4");
-            ParseList("tv.log.5");
-            ParseList("tv.log.6");
-            ParseList("tv.log.7");
-            ParseList("tv.log.8");
-            ParseList("tv.log.9");
-            ParseList("tv.log.10");
-            ParseList("tv.log.11");
 
 
             if (args.Length > 0)
@@ -154,7 +143,16 @@ namespace NGINX_LOG_JSON_PARSER
             System.IO.StreamReader file = new System.IO.StreamReader(filename);
             while ((line = file.ReadLine()) != null)
             {
-                var lineobj = JsonConvert.DeserializeObject<JSON_ITEM>(line);
+                JSON_ITEM lineobj = null;
+                try
+                {
+                    lineobj = JsonConvert.DeserializeObject<JSON_ITEM>(line);
+                }
+                catch (JsonReaderException)
+                {
+                    Console.WriteLine("Failed reading a line");
+                }
+
                 if (lineobj != null)
                 {
                     list.Add(lineobj);
